@@ -9,13 +9,7 @@
  var playlist;
  var currentTrack = 0;
       $(document).ready(function() {
-        
-          myAudio.id = "audio";
-          $("#player")[0].appendChild(myAudio);
-          //myAudio.play();
-         // $("#audio")[0].play();
 
-          ID3.loadTags(file, mycallback);
         
         $("#audio")[0].addEventListener("timeupdate", function(){if($("#audio")[0].currentTime !=0){$("#loading").hide();}
         $("#timer").html(parseInt($("#audio")[0].currentTime));
@@ -34,8 +28,7 @@
  // alert("All tags in this file: " + ID3.getAllTags(file) );
 
  // or call ID3.getTag([file], [tag]) to get a specific tag
- $("#artist").html(ID3.getTag(file, "artist")+'<br/>');
- $("#song").html(ID3.getTag(file, "title")+'<br/>');
+ 
 }
     function getPlaylist(){
         
