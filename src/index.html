@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="binaryajax.js" ></script>
+<script type="text/javascript" src="id3.js" ></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+<script type="text/javascript" src="jquery.playlist.js"></script>
+<script type="text/javascript">
+ var playlist;
+ var currentTrack = 0;
+ var file = "test.mp3";
+      $(document).ready(function() {
+        
+      
+          //$('audio').playlistParser();
+          
+          var myAudio = new Audio("test.mp3");
+         // myAudio.controls = "controls";
+          myAudio.id = "audio";
+          $("#player")[0].appendChild(myAudio);
+          //myAudio.play();
+         // $("#audio")[0].play();
+
+          ID3.loadTags(file, mycallback);
+        
+        $("#audio")[0].addEventListener("timeupdate", function(){if($("#audio")[0].currentTime !=0){$("#loading").hide();}
+        $("#timer").html(parseInt($("#audio")[0].currentTime));
+        });
+        $("#audio")[0].addEventListener("ended", function(){
+            $("#loading").show();
+            currentTrack += 1; 
+            $('#audio')[0].src = playlist[currentTrack]; 
+            $('#audio')[0].load(); 
+            $('#audio')[0].play();
+        });
+            
+      });
+      function mycallback() {
+ // either call the ID3.getAllTags([file]) function which returns an object holding all the tags 
+ // alert("All tags in this file: " + ID3.getAllTags(file) );
+
+ // or call ID3.getTag([file], [tag]) to get a specific tag
+ $("#artist").html(ID3.getTag(file, "artist")+'<br/>');
+ $("#song").html(ID3.getTag(file, "title")+'<br/>');
+}
+    function getPlaylist(){
+        
+        var ajax_options = {url:$("#url")[0].value};
+        $.get('proxy.php', ajax_options, function(data) {
+                var parser = new $.playlistOptions.parsers['m3u'](data);
+                playlist = parser.parse();
+                var thelist = '';
+                for(var i = 0; i < playlist.length; i++){
+                thelist += playlist[i] + '<br/>';
+                }
+                $("#playlist").html(thelist);
+                });
+    
+    }
+</script>
+<title>Media Player</title>
+</head>
+<body>
+<img src="loading.gif" id="loading" style="display:none; position:absolute; right: 10px; top:5px;"/>
+<div id="player">
+<span id="artist">Artist</span>
+<span id="song">Song</span>
+<a href="javascript:$('#loading').show(); currentTrack = currentTrack - 1; $('#audio')[0].src = playlist[currentTrack]; $('#audio')[0].load(); $('#audio')[0].play();">Previous Track</a>
+<a href="javascript:$('#audio')[0].play(); $("#loading").show()">Play</a>
+<a href="javascript:$('#audio')[0].pause();">Pause</a>
+<a href="javascript:$('#loading').show(); currentTrack += 1; $('#audio')[0].src = playlist[currentTrack]; $('#audio')[0].load(); $('#audio')[0].play();">Next Track</a>
+<span id="timer">0:00</span><br/>
+<input type="text" id="url" style="width:400px;" onchange="getPlaylist()" />
+</div>
+<div id="playlist">
+</div>
+</body>
+</html>
